@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Home, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Home, Star, CheckCircle } from 'lucide-react';
 import { quizQuestions } from '../data/quizQuestions';
+import { analyzeCareerFit } from '../utils/careerAnalysis';
 
 interface CareerQuizProps {
   onGoHome: () => void;
@@ -9,8 +10,8 @@ interface CareerQuizProps {
 
 const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
   const [currentQuestion, setCurrentQuestion] = useState(-1); // Start with welcome screen
-  const [answers, setAnswers] = useState<string[]>(new Array(quizQuestions.length).fill(''));
-  const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<(string | string[] | number)[]>(new Array(quizQuestions.length).fill(''));
+  const [selectedAnswers, setSelectedAnswers] = useState<string[] | number[]>([]);
 
   const handleWelcomeStart = () => {
     setCurrentQuestion(0);
@@ -19,13 +20,21 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
   const handleAnswerSelect = (answer: string) => {
     const question = quizQuestions[currentQuestion];
     
-    if (question.multiSelect) {
-      const newSelected = selectedAnswers.includes(answer)
-        ? selectedAnswers.filter(a => a !== answer)
-        : selectedAnswers.length < 2 
-          ? [...selectedAnswers, answer]
-          : selectedAnswers;
+    if (question.type === 'multi-select') {
+      const currentSelected = selectedAnswers as string[];
+      const maxSelections = question.maxSelections || 3;
+      const newSelected = currentSelected.includes(answer)
+        ? currentSelected.filter(a => a !== answer)
+        : currentSelected.length < maxSelections 
+          ? [...currentSelected, answer]
+          : currentSelected;
       setSelectedAnswers(newSelected);
+    } else if (question.type === 'rating') {
+      // For rating questions, we'll handle this differently
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = answer;
+      setAnswers(newAnswers);
+      setSelectedAnswers([]);
     } else {
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = answer;
@@ -34,11 +43,17 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
     }
   };
 
+  const handleRatingSelect = (value: number) => {
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = value;
+    setAnswers(newAnswers);
+  };
+
   const goToNext = () => {
     if (currentQuestion < quizQuestions.length - 1) {
-      if (quizQuestions[currentQuestion].multiSelect) {
+      if (quizQuestions[currentQuestion].type === 'multi-select') {
         const newAnswers = [...answers];
-        newAnswers[currentQuestion] = selectedAnswers.join(', ');
+        newAnswers[currentQuestion] = selectedAnswers as string[];
         setAnswers(newAnswers);
         setSelectedAnswers([]);
       }
@@ -55,91 +70,28 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
 
   const handleSubmit = () => {
     // Process final multi-select answer
-    if (quizQuestions[currentQuestion].multiSelect) {
+    if (quizQuestions[currentQuestion].type === 'multi-select') {
       const newAnswers = [...answers];
-      newAnswers[currentQuestion] = selectedAnswers.join(', ');
+      newAnswers[currentQuestion] = selectedAnswers as string[];
       setAnswers(newAnswers);
     }
 
-    // Import and use CareerResults component
-    import('../components/CareerResults').then(({ default: CareerResults }) => {
-      const careerMatches = calculateCareerMatches(answers);
-      onShowResult({ careers: careerMatches });
-    });
-  };
-
-  const calculateCareerMatches = (userAnswers: string[]) => {
-    // Simplified career matching algorithm
-    const careers = [
-      {
-        title: "Software Developer",
-        description: "Build websites, mobile apps, and software solutions that millions of Nigerians use daily. Work with companies like Paystack, Flutterwave, or start your own tech business.",
-        skills: ["Programming (Python, JavaScript)", "Problem-solving", "Logical thinking", "Attention to detail", "Continuous learning"],
-        howToStart: [
-          "Start with free coding courses on FreeCodeCamp or Codecademy",
-          "Practice building simple projects like a personal website",
-          "Join Nigerian tech communities like DevCenter Lagos or Forloop Africa"
-        ],
-        successStory: {
-          name: "Adebayo Ogundimu",
-          story: "Started learning to code in university. Now works as a Senior Developer at Paystack, earning ₦8M annually and building payment solutions for African businesses."
-        },
-        earning: "₦2.5M - ₦15M per year",
-        training: {
-          online: ["FreeCodeCamp", "Udemy Web Development", "YouTube coding tutorials"],
-          offline: ["Decagon Institute", "New Horizons Computer Learning", "Local coding bootcamps"]
-        },
-        match: 95
-      },
-      {
-        title: "Digital Marketing Specialist",
-        description: "Help Nigerian businesses grow online through social media, content creation, and digital advertising. Perfect for creative minds who understand social trends.",
-        skills: ["Social media management", "Content creation", "Data analysis", "Communication", "Creativity"],
-        howToStart: [
-          "Learn digital marketing basics through Google Digital Skills",
-          "Practice by managing social media for local businesses",
-          "Get certified in Facebook Ads and Google Analytics"
-        ],
-        successStory: {
-          name: "Funmi Adebayo",
-          story: "Started by managing Instagram for her friend's fashion brand. Now runs a digital agency with 15 clients, earning ₦5M annually while working from home."
-        },
-        earning: "₦1.5M - ₦8M per year",
-        training: {
-          online: ["Google Digital Skills", "HubSpot Academy", "Facebook Blueprint"],
-          offline: ["NIIT Digital Marketing", "Jobberman Soft Skills", "Local marketing workshops"]
-        },
-        match: 88
-      },
-      {
-        title: "Graphic Designer",
-        description: "Create visual content for brands, websites, and marketing materials. High demand in Nigeria's growing creative industry and entertainment sector.",
-        skills: ["Adobe Creative Suite", "Visual communication", "Creativity", "Brand understanding", "Client management"],
-        howToStart: [
-          "Learn design basics using free tools like Canva and GIMP",
-          "Practice by creating designs for local businesses",
-          "Build a portfolio on Behance or Instagram"
-        ],
-        successStory: {
-          name: "Kemi Oladele",
-          story: "Self-taught designer who started with free YouTube tutorials. Now works with major Nollywood productions and earns ₦4M annually as a freelance brand designer."
-        },
-        earning: "₁M - ₦6M per year",
-        training: {
-          online: ["YouTube design tutorials", "Skillshare", "Adobe tutorials"],
-          offline: ["Pencil and Pixel Academy", "Design workshops", "Art schools"]
-        },
-        match: 82
-      }
-    ];
-
-    // Simple scoring based on answers
-    return careers.sort((a, b) => b.match - a.match).slice(0, 3);
+    // Use the AI analysis engine
+    const analysisResult = analyzeCareerFit(quizQuestions, answers);
+    onShowResult({ careers: analysisResult.topMatches, analysis: analysisResult });
   };
 
   const progress = currentQuestion === -1 ? 0 : ((currentQuestion + 1) / quizQuestions.length) * 100;
-  const canProceed = currentQuestion === -1 ? true : 
-    quizQuestions[currentQuestion]?.multiSelect ? selectedAnswers.length > 0 : answers[currentQuestion];
+  const canProceed = currentQuestion === -1 ? true : (() => {
+    const question = quizQuestions[currentQuestion];
+    if (question?.type === 'multi-select') {
+      return selectedAnswers.length > 0;
+    } else if (question?.type === 'rating') {
+      return answers[currentQuestion] !== '';
+    } else {
+      return answers[currentQuestion] !== '';
+    }
+  })();
 
   // Welcome Screen
   if (currentQuestion === -1) {
@@ -185,11 +137,11 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                 <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
-                    <span>6 Questions</span>
+                    <span>{quizQuestions.length} Questions</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-[#FFD700] rounded-full"></div>
-                    <span>5 Minutes</span>
+                    <span>8-12 Minutes</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
@@ -250,49 +202,87 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
             {question.description && (
               <p className="text-gray-600">{question.description}</p>
             )}
-            {question.multiSelect && (
-              <p className="text-[#2E8B57] font-medium mt-2">Choose up to 2 options</p>
+            {question.type === 'multi-select' && (
+              <p className="text-[#2E8B57] font-medium mt-2">
+                Choose up to {question.maxSelections || 3} options
+              </p>
+            )}
+            {question.type === 'rating' && (
+              <p className="text-[#2E8B57] font-medium mt-2">Rate each factor from 1 (not important) to 5 (extremely important)</p>
             )}
           </div>
 
-          {/* Answer Options */}
-          <div className="space-y-4 mb-12">
-            {question.options.map((option, index) => {
-              const isSelected = question.multiSelect 
-                ? selectedAnswers.includes(option)
-                : answers[currentQuestion] === option;
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSelect(option)}
-                  disabled={question.multiSelect && !isSelected && selectedAnswers.length >= 2}
-                  className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-200 ${
-                    isSelected
-                      ? 'border-[#2E8B57] bg-[#2E8B57]/5 text-[#2E8B57]'
-                      : question.multiSelect && selectedAnswers.length >= 2
-                        ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                        : 'border-gray-200 hover:border-[#2E8B57]/50 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        isSelected
-                          ? 'border-[#2E8B57] bg-[#2E8B57]'
-                          : 'border-gray-300'
-                      }`}
-                    >
-                      {isSelected && (
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                      )}
-                    </div>
-                    <span className="font-medium">{option}</span>
+          {/* Answer Options - Different rendering based on question type */}
+          {question.type === 'rating' ? (
+            <div className="space-y-6 mb-12">
+              {(question.options as { value: number; label: string }[]).map((option, index) => (
+                <div key={index} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-700">{option.label}</span>
+                    <span className="text-sm text-gray-500">
+                      {answers[currentQuestion] === option.value ? `Rating: ${option.value}` : 'Not rated'}
+                    </span>
                   </div>
-                </button>
-              );
-            })}
-          </div>
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <button
+                        key={rating}
+                        onClick={() => handleRatingSelect(rating)}
+                        className={`w-12 h-12 rounded-full border-2 font-bold transition-all duration-200 ${
+                          answers[currentQuestion] === rating
+                            ? 'border-[#2E8B57] bg-[#2E8B57] text-white'
+                            : 'border-gray-300 hover:border-[#2E8B57]/50 text-gray-600'
+                        }`}
+                      >
+                        {rating}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4 mb-12">
+              {(question.options as string[]).map((option, index) => {
+                const isSelected = question.type === 'multi-select' 
+                  ? (selectedAnswers as string[]).includes(option)
+                  : answers[currentQuestion] === option;
+                const maxSelections = question.maxSelections || 3;
+                
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleAnswerSelect(option)}
+                    disabled={question.type === 'multi-select' && !isSelected && (selectedAnswers as string[]).length >= maxSelections}
+                    className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-200 ${
+                      isSelected
+                        ? 'border-[#2E8B57] bg-[#2E8B57]/5 text-[#2E8B57]'
+                        : question.type === 'multi-select' && (selectedAnswers as string[]).length >= maxSelections
+                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'border-gray-200 hover:border-[#2E8B57]/50 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`w-5 h-5 ${question.type === 'multi-select' ? 'rounded-md' : 'rounded-full'} border-2 flex items-center justify-center ${
+                          isSelected
+                            ? 'border-[#2E8B57] bg-[#2E8B57]'
+                            : 'border-gray-300'
+                        }`}
+                      >
+                        {isSelected && (
+                          question.type === 'multi-select' 
+                            ? <CheckCircle className="w-3 h-3 text-white" />
+                            : <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                      <span className="font-medium">{option}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Navigation Buttons */}
           <div className="flex justify-between">

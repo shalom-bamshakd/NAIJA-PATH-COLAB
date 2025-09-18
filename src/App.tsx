@@ -10,10 +10,11 @@ import CareerQuiz from './components/CareerQuiz';
 import CareerResults from './components/CareerResults';
 import LearningRoadmap from './components/learning-roadmap/LearningRoadmap';
 import Premium from './components/premium/Premium';
+import { CareerMatch, AnalysisResult } from './utils/careerAnalysis';
 
 function App() {
   const [currentView, setCurrentView] = useState<'home' | 'quiz' | 'result' | 'roadmap' | 'premium'>('home');
-  const [careerResult, setCareerResult] = useState<any>(null);
+  const [careerResult, setCareerResult] = useState<{ careers: CareerMatch[]; analysis: AnalysisResult } | null>(null);
 
   const startQuiz = () => {
     setCurrentView('quiz');
@@ -56,14 +57,15 @@ function App() {
       
       {currentView === 'result' && (
         <CareerResults 
-          careers={careerResult?.careers || []} 
+          careers={careerResult?.careers || []}
+          analysis={careerResult?.analysis}
           onGoHome={goHome} 
         />
       )}
       
       {currentView === 'roadmap' && (
         <LearningRoadmap 
-          career={careerResult?.career || 'Software Developer'}
+          career={careerResult?.careers[0]?.career.title || 'Software Developer'}
           onGoHome={goHome}
           onUpgradePremium={showPremium}
         />
