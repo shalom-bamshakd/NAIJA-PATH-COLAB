@@ -4,29 +4,19 @@ import { QuizQuestion, CareerOption, quizQuestions, careerDatabase } from '../da
 // Define interfaces
 export interface CareerMatch {
   career: CareerOption;
-  confidenceScore: number;
-  matchReasons: string[];
-  skillGaps: string[];
-  nextSteps: string[];
+  matchPercentage: number;
+  strengths: string[];
+  growthAreas: string[];
 }
 
 export interface AnalysisResult {
   topMatches: CareerMatch[];
-  personalityProfile: {
+  overallProfile: {
     strengths: string[];
-    workStyle: string;
-    motivations: string[];
+    interests: string[];
+    workStyle: string[];
   };
-  skillsAssessment: {
-    currentStrengths: string[];
-    developmentAreas: string[];
-    recommendedSkills: string[];
-  };
-  marketInsights: {
-    industryTrends: string[];
-    salaryOutlook: string;
-    jobAvailability: string;
-  };
+  recommendations: string[];
 }
 
 // Define a type (optional but good practice in TypeScript)
@@ -84,6 +74,6 @@ export function analyzeCareerFit(
       industryTrends: ['Growing demand for tech skills', 'Remote work opportunities', 'Digital transformation'],
       salaryOutlook: 'Above average growth expected',
       jobAvailability: 'High demand in major Nigerian cities'
-    ]
+    }
   };
 }
