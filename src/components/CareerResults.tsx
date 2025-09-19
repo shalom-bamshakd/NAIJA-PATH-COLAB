@@ -85,7 +85,7 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
       <div className="max-w-4xl mx-auto">
         {/* Career Selection Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {careers.map((careerMatch, index) => (
+          {careers.slice(0, 3).map((careerMatch, index) => (
             <button
               key={index}
               onClick={() => setSelectedCareer(index)}
@@ -108,7 +108,7 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
         </div>
 
         {/* Selected Career Details */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
           <div className="bg-gradient-to-r from-[#2E8B57] to-[#FFD700] p-8 text-white">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-3xl lg:text-4xl font-bold">
@@ -265,6 +265,52 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
             </div>
           </div>
         </div>
+
+        {/* Other Recommendations */}
+        {careers.length > 1 && (
+          <div className="bg-white rounded-3xl shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Other Great Matches for You</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {careers.slice(1, 3).map((careerMatch, index) => (
+                <div key={index + 1} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-gray-900">{careerMatch.career.title}</h3>
+                    <div className="bg-[#2E8B57]/10 text-[#2E8B57] px-3 py-1 rounded-full text-sm font-bold">
+                      {Math.round(careerMatch.confidenceScore * 100)}% Match
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-4 line-clamp-3">{careerMatch.career.description}</p>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Salary Range:</span>
+                      <span className="font-semibold text-gray-900">{careerMatch.career.nigerianContext.averageSalary}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Market Demand:</span>
+                      <span className={`font-semibold capitalize ${
+                        careerMatch.career.nigerianContext.demand === 'high' ? 'text-green-600' :
+                        careerMatch.career.nigerianContext.demand === 'medium' ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {careerMatch.career.nigerianContext.demand}
+                      </span>
+                    </div>
+                    
+                    <button
+                      onClick={() => setSelectedCareer(index + 1)}
+                      className="w-full mt-4 bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
