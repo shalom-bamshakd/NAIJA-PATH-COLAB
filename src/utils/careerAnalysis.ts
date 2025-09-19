@@ -212,3 +212,4 @@ export function analyzeCareerFit(
       'Consider pursuing relevant certifications'
     ]
   };
+}
