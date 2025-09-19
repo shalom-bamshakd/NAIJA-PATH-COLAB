@@ -12,6 +12,7 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
   const [currentQuestion, setCurrentQuestion] = useState(-1); // Start with welcome screen
   const [answers, setAnswers] = useState<(string | string[] | number)[]>(new Array(quizQuestions.length).fill(''));
   const [selectedAnswers, setSelectedAnswers] = useState<string[] | number[]>([]);
+  const [ratingAnswers, setRatingAnswers] = useState<{ [key: string]: number }>({});
 
   const handleWelcomeStart = () => {
     setCurrentQuestion(0);
@@ -44,8 +45,26 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
   };
 
   const handleRatingSelect = (value: number) => {
+    const question = quizQuestions[currentQuestion];
+    const optionIndex = (question.options as { value: number; label: string }[]).findIndex(opt => opt.value === value);
+    const optionLabel = (question.options as { value: number; label: string }[])[optionIndex]?.label;
+    
+    if (optionLabel) {
+      const newRatingAnswers = { ...ratingAnswers, [optionLabel]: value };
+      setRatingAnswers(newRatingAnswers);
+      
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = newRatingAnswers;
+      setAnswers(newAnswers);
+    }
+  };
+
+  const handleRatingSelectForFactor = (factorLabel: string, value: number) => {
+    const newRatingAnswers = { ...ratingAnswers, [factorLabel]: value };
+    setRatingAnswers(newRatingAnswers);
+    
     const newAnswers = [...answers];
-    newAnswers[currentQuestion] = value;
+    newAnswers[currentQuestion] = newRatingAnswers;
     setAnswers(newAnswers);
   };
 
@@ -74,6 +93,10 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
       const newAnswers = [...answers];
       newAnswers[currentQuestion] = selectedAnswers as string[];
       setAnswers(newAnswers);
+    } else if (quizQuestions[currentQuestion].type === 'rating') {
+      const newAnswers = [...answers];
+      newAnswers[currentQuestion] = ratingAnswers;
+      setAnswers(newAnswers);
     }
 
     // Use the AI analysis engine
@@ -87,7 +110,9 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
     if (question?.type === 'multi-select') {
       return selectedAnswers.length > 0;
     } else if (question?.type === 'rating') {
-      return answers[currentQuestion] !== '';
+      const ratingCount = Object.keys(ratingAnswers).length;
+      const expectedCount = (question.options as { value: number; label: string }[]).length;
+      return ratingCount === expectedCount;
     } else {
       return answers[currentQuestion] !== '';
     }
@@ -215,21 +240,23 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
           {/* Answer Options - Different rendering based on question type */}
           {question.type === 'rating' ? (
             <div className="space-y-6 mb-12">
-              {(question.options as { value: number; label: string }[]).map((option, index) => (
+              {(question.options as { value: number; label: string }[]).map((option, index) => {
+                const currentRating = ratingAnswers[option.label] || 0;
+                return (
                 <div key={index} className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-gray-700">{option.label}</span>
                     <span className="text-sm text-gray-500">
-                      {answers[currentQuestion] === option.value ? `Rating: ${option.value}` : 'Not rated'}
+                      {currentRating > 0 ? `Rating: ${currentRating}` : 'Not rated'}
                     </span>
                   </div>
                   <div className="flex space-x-2">
                     {[1, 2, 3, 4, 5].map((rating) => (
                       <button
                         key={rating}
-                        onClick={() => handleRatingSelect(rating)}
+                        onClick={() => handleRatingSelectForFactor(option.label, rating)}
                         className={`w-12 h-12 rounded-full border-2 font-bold transition-all duration-200 ${
-                          answers[currentQuestion] === rating
+                          currentRating === rating
                             ? 'border-[#2E8B57] bg-[#2E8B57] text-white'
                             : 'border-gray-300 hover:border-[#2E8B57]/50 text-gray-600'
                         }`}
@@ -239,7 +266,8 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                     ))}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="space-y-4 mb-12">

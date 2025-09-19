@@ -74,7 +74,14 @@ export class CareerAnalysisEngine {
       } else if (typeof answer === 'string') {
         responsePatterns[category].push(answer);
       } else if (typeof answer === 'number') {
-        // Convert rating to descriptive text
+      if (typeof answer === 'object' && answer !== null && !Array.isArray(answer)) {
+        // Handle rating object with multiple factors
+        Object.entries(answer as { [key: string]: number }).forEach(([factor, rating]) => {
+          if (rating >= 4) responsePatterns[category].push(`${factor}-high-priority`);
+          else if (rating >= 3) responsePatterns[category].push(`${factor}-medium-priority`);
+          else responsePatterns[category].push(`${factor}-low-priority`);
+        });
+      } else if (typeof answer === 'number') {
         if (answer >= 4) responsePatterns[category].push('high-priority');
         else if (answer >= 3) responsePatterns[category].push('medium-priority');
         else responsePatterns[category].push('low-priority');
