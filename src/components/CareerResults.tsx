@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Home, Share2, Printer, MessageCircle, Facebook, Star, TrendingUp, BookOpen, Users } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { CareerMatch, AnalysisResult } from '../utils/careerAnalysis';
 
 interface CareerResultsProps {
@@ -32,45 +36,49 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
       {/* Header */}
       <div className="max-w-4xl mx-auto mb-8">
         <div className="flex items-center justify-between mb-6">
-          <button
+          <Button
+            variant="ghost"
             onClick={onGoHome}
             className="flex items-center space-x-2 text-gray-600 hover:text-[#2E8B57] transition-colors duration-200"
           >
             <Home className="h-5 w-5" />
             <span className="font-medium">Back to Home</span>
-          </button>
+          </Button>
           
           <div className="flex space-x-3">
-            <button
+            <Button
+              variant="default"
               onClick={() => handleShare('whatsapp')}
               className="flex items-center space-x-2 bg-[#25D366] hover:bg-[#128C7E] text-white px-4 py-2 rounded-lg transition-colors duration-200"
             >
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Share</span>
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="default"
               onClick={() => handleShare('facebook')}
               className="flex items-center space-x-2 bg-[#1877F2] hover:bg-[#166FE5] text-white px-4 py-2 rounded-lg transition-colors duration-200"
             >
               <Facebook className="h-4 w-4" />
               <span className="hidden sm:inline">Share</span>
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
               onClick={handlePrint}
-              className="flex items-center space-x-2 border-2 border-[#2E8B57] text-[#2E8B57] hover:bg-[#2E8B57] hover:text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              className="flex items-center space-x-2 border-2 border-[#2E8B57] text-[#2E8B57] hover:bg-[#2E8B57] hover:text-white px-4 py-2 rounded-lg"
             >
               <Printer className="h-4 w-4" />
               <span className="hidden sm:inline">Print</span>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Results Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center bg-white rounded-full px-6 py-3 shadow-lg mb-6">
+          <Badge variant="secondary" className="inline-flex items-center bg-white rounded-full px-6 py-3 shadow-lg mb-6">
             <Star className="h-6 w-6 text-[#FFD700] mr-2" />
             <span className="font-bold text-gray-900">Your Career Matches</span>
-          </div>
+          </Badge>
           
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             Perfect Careers for You!
@@ -84,48 +92,38 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
       {/* Career Cards */}
       <div className="max-w-4xl mx-auto">
         {/* Career Selection Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          {careers.slice(0, 3).map((careerMatch, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedCareer(index)}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                selectedCareer === index
-                  ? 'bg-[#2E8B57] text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
-              }`}
-            >
-              <div className="flex items-center space-x-2">
+        <Tabs value={selectedCareer.toString()} onValueChange={(value) => setSelectedCareer(parseInt(value))} className="mb-8">
+          <TabsList className="grid w-full grid-cols-3">
+            {careers.slice(0, 3).map((careerMatch, index) => (
+              <TabsTrigger key={index} value={index.toString()} className="flex items-center space-x-2">
                 <span>{careerMatch.career.title}</span>
-                <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                  selectedCareer === index ? 'bg-white/20' : 'bg-[#2E8B57] text-white'
-                }`}>
+                <Badge variant="secondary" className="text-xs">
                   {Math.round(careerMatch.confidenceScore * 100)}%
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+                </Badge>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         {/* Selected Career Details */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
+        <Card className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
           <div className="bg-gradient-to-r from-[#2E8B57] to-[#FFD700] p-8 text-white">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-3xl lg:text-4xl font-bold">
+              <CardTitle className="text-3xl lg:text-4xl font-bold text-white">
                 {careers[selectedCareer].career.title}
-              </h2>
-              <div className="bg-white/20 px-4 py-2 rounded-full">
+              </CardTitle>
+              <Badge variant="secondary" className="bg-white/20 px-4 py-2 rounded-full text-white">
                 <span className="text-2xl font-bold">
                   {Math.round(careers[selectedCareer].confidenceScore * 100)}% Match
                 </span>
-              </div>
+              </Badge>
             </div>
-            <p className="text-xl leading-relaxed opacity-90">
+            <CardDescription className="text-xl leading-relaxed opacity-90 text-white">
               {careers[selectedCareer].career.description}
-            </p>
+            </CardDescription>
           </div>
 
-          <div className="p-8 lg:p-12 space-y-12">
+          <CardContent className="p-8 lg:p-12 space-y-12">
             {/* Match Reasons */}
             <div>
               <div className="flex items-center mb-6">
@@ -156,7 +154,7 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
                 {careers[selectedCareer].career.requiredSkills.map((skill, index) => (
                   <div key={index} className="flex items-center space-x-3 p-4 bg-gray-50 rounded-xl">
                     <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
-                    <span className="font-medium text-gray-700">{skill}</span>
+                    <Badge variant="outline" className="font-medium text-gray-700">{skill}</Badge>
                   </div>
                 ))}
               </div>
@@ -195,7 +193,7 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
                   {careers[selectedCareer].skillGaps.map((skill, index) => (
                     <div key={index} className="flex items-center space-x-3 p-4 bg-orange-50 rounded-xl">
                       <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      <span className="font-medium text-gray-700">{skill}</span>
+                      <Badge variant="outline" className="font-medium text-gray-700">{skill}</Badge>
                     </div>
                   ))}
                 </div>
@@ -227,9 +225,9 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
                 <h4 className="font-semibold text-gray-900 mb-2">Top Opportunities</h4>
                 <div className="flex flex-wrap gap-2">
                   {careers[selectedCareer].career.nigerianContext.localOpportunities.map((opportunity, index) => (
-                    <span key={index} className="bg-[#2E8B57]/10 text-[#2E8B57] px-3 py-1 rounded-full text-sm font-medium">
+                    <Badge key={index} variant="secondary" className="bg-[#2E8B57]/10 text-[#2E8B57]">
                       {opportunity}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -242,7 +240,7 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
                 {careers[selectedCareer].career.educationRequirements.map((requirement, index) => (
                   <div key={index} className="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="font-medium text-gray-700">{requirement}</span>
+                    <Badge variant="outline" className="font-medium text-gray-700">{requirement}</Badge>
                   </div>
                 ))}
               </div>
@@ -255,61 +253,72 @@ const CareerResults: React.FC<CareerResultsProps> = ({ careers, analysis, onGoHo
                 Take the first step towards your dream career today!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-gray-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors duration-200">
+                <Button className="bg-white text-gray-900 px-8 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors duration-200">
                   Find Training Near Me
-                </button>
-                <button className="border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-colors duration-200">
+                </Button>
+                <Button variant="outline" className="border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-colors duration-200">
                   Connect with Mentor
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Other Recommendations */}
         {careers.length > 1 && (
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Other Great Matches for You</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {careers.slice(1, 3).map((careerMatch, index) => (
-                <div key={index + 1} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow duration-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">{careerMatch.career.title}</h3>
-                    <div className="bg-[#2E8B57]/10 text-[#2E8B57] px-3 py-1 rounded-full text-sm font-bold">
-                      {Math.round(careerMatch.confidenceScore * 100)}% Match
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-3">{careerMatch.career.description}</p>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Salary Range:</span>
-                      <span className="font-semibold text-gray-900">{careerMatch.career.nigerianContext.averageSalary}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Market Demand:</span>
-                      <span className={`font-semibold capitalize ${
-                        careerMatch.career.nigerianContext.demand === 'high' ? 'text-green-600' :
-                        careerMatch.career.nigerianContext.demand === 'medium' ? 'text-yellow-600' :
-                        'text-red-600'
-                      }`}>
-                        {careerMatch.career.nigerianContext.demand}
-                      </span>
-                    </div>
-                    
-                    <button
-                      onClick={() => setSelectedCareer(index + 1)}
-                      className="w-full mt-4 bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <Card className="bg-white rounded-3xl shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-gray-900">Other Great Matches for You</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                {careers.slice(1, 3).map((careerMatch, index) => (
+                  <Card key={index + 1} className="border border-gray-200 rounded-xl hover:shadow-lg transition-shadow duration-200">
+                    <CardHeader>
+                      <div className="flex items-center justify-between mb-4">
+                        <CardTitle className="text-xl font-bold text-gray-900">{careerMatch.career.title}</CardTitle>
+                        <Badge variant="secondary" className="bg-[#2E8B57]/10 text-[#2E8B57]">
+                          {Math.round(careerMatch.confidenceScore * 100)}% Match
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-gray-600 mb-4 line-clamp-3">
+                        {careerMatch.career.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Salary Range:</span>
+                          <span className="font-semibold text-gray-900">{careerMatch.career.nigerianContext.averageSalary}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-500">Market Demand:</span>
+                          <Badge variant={
+                            careerMatch.career.nigerianContext.demand === 'high' ? 'default' :
+                            careerMatch.career.nigerianContext.demand === 'medium' ? 'secondary' : 'outline'
+                          } className={`font-semibold capitalize ${
+                            careerMatch.career.nigerianContext.demand === 'high' ? 'text-green-600' :
+                            careerMatch.career.nigerianContext.demand === 'medium' ? 'text-yellow-600' :
+                            'text-red-600'
+                          }`}>
+                            {careerMatch.career.nigerianContext.demand}
+                          </Badge>
+                        </div>
+                        
+                        <Button
+                          onClick={() => setSelectedCareer(index + 1)}
+                          className="w-full mt-4 bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white py-2 rounded-lg font-semibold transition-colors duration-200"
+                        >
+                          View Details
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>
