@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowRight, Star, Users, Award, TrendingUp } from 'lucide-react';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 interface HeroProps {
   onStartQuiz: () => void;
@@ -20,10 +22,10 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz }) => {
           {/* Left Content */}
           <div className="space-y-8">
             {/* Social Proof Badge */}
-            <div className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-[#1B4D3E]/20 text-[#1B4D3E] px-6 py-3 rounded-full shadow-lg">
+            <Badge variant="secondary" className="inline-flex items-center bg-white/80 backdrop-blur-sm border border-[#1B4D3E]/20 text-[#1B4D3E] px-6 py-3 rounded-full shadow-lg">
               <Users className="h-5 w-5 mr-2" />
               <span className="font-semibold font-opensans">Trusted by 50,000+ Nigerian Youth</span>
-            </div>
+            </Badge>
             
             <div className="space-y-6">
               <h1 className="text-5xl lg:text-7xl font-bold font-montserrat text-[#2C3E50] leading-tight">
@@ -42,13 +44,14 @@ const Hero: React.FC<HeroProps> = ({ onStartQuiz }) => {
 
             {/* CTA Section */}
             <div className="flex flex-col sm:flex-row gap-6 items-start">
-              <button
+              <Button
                 onClick={onStartQuiz}
-                className="group bg-[#FFD700] hover:bg-[#FFC700] text-[#1B4D3E] px-10 py-5 rounded-xl font-bold font-montserrat text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center"
+                size="lg"
+                className="group bg-[#FFD700] hover:bg-[#FFC700] text-[#1B4D3E] px-10 py-5 rounded-xl font-bold font-montserrat text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 Start Free Career Assessment
                 <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
+              </Button>
               
               <div className="flex items-center space-x-4 text-[#2C3E50]/70">
                 <div className="flex -space-x-2">

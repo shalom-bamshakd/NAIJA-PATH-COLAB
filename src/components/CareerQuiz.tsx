@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Home, Star, CheckCircle } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Progress } from './ui/progress';
+import { Badge } from './ui/badge';
 import { quizQuestions } from '../data/quizQuestions';
 import { analyzeCareerFit } from '../utils/careerAnalysis';
 
@@ -123,57 +127,62 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
 
         <div className="relative min-h-screen flex items-center justify-center p-4">
           <div className="max-w-2xl mx-auto text-center">
-            <button
+            <Button
+              variant="ghost"
               onClick={onGoHome}
               className="absolute top-8 left-8 flex items-center space-x-2 text-gray-600 hover:text-[#2E8B57] transition-colors duration-200"
             >
               <Home className="h-5 w-5" />
               <span className="font-medium">Back to Home</span>
-            </button>
+            </Button>
 
-            <div className="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
-              <div className="mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#2E8B57] to-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Star className="h-10 w-10 text-white" />
+            <Card className="bg-white rounded-3xl shadow-2xl border border-gray-100">
+              <CardHeader className="p-12">
+                <div className="mb-8">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#2E8B57] to-[#FFD700] rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Star className="h-10 w-10 text-white" />
+                  </div>
+                  
+                  <CardTitle className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                    Find Your Dream Career
+                  </CardTitle>
+                  <Badge variant="secondary" className="text-2xl font-semibold text-[#2E8B57] mb-4 px-4 py-2">
+                    NaijaPath Quiz
+                  </Badge>
+                  
+                  <CardDescription className="text-xl text-gray-600 leading-relaxed max-w-xl mx-auto">
+                    Answer 6 simple questions to discover jobs that match your skills and interests. 
+                    Get personalized career recommendations made for young Nigerians like you.
+                  </CardDescription>
                 </div>
-                
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                  Find Your Dream Career
-                </h1>
-                <div className="text-2xl font-semibold text-[#2E8B57] mb-4">
-                  NaijaPath Quiz
-                </div>
-                
-                <p className="text-xl text-gray-600 leading-relaxed max-w-xl mx-auto">
-                  Answer 6 simple questions to discover jobs that match your skills and interests. 
-                  Get personalized career recommendations made for young Nigerians like you.
-                </p>
-              </div>
+              </CardHeader>
+              <CardContent className="px-12 pb-12">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
+                      <span>{quizQuestions.length} Questions</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-[#FFD700] rounded-full"></div>
+                      <span>8-12 Minutes</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
+                      <span>Free Results</span>
+                    </div>
+                  </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
-                    <span>{quizQuestions.length} Questions</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-[#FFD700] rounded-full"></div>
-                    <span>8-12 Minutes</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-[#2E8B57] rounded-full"></div>
-                    <span>Free Results</span>
-                  </div>
+                  <Button
+                    onClick={handleWelcomeStart}
+                    size="lg"
+                    className="bg-[#FFD700] hover:bg-[#FFC700] text-gray-900 px-12 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  >
+                    Begin Your Journey
+                  </Button>
                 </div>
-
-                <button
-                  onClick={handleWelcomeStart}
-                  className="bg-[#FFD700] hover:bg-[#FFC700] text-gray-900 px-12 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                >
-                  Begin Your Journey
-                </button>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -187,47 +196,46 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
       {/* Header */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="flex items-center justify-between mb-6">
-          <button
+          <Button
+            variant="ghost"
             onClick={onGoHome}
             className="flex items-center space-x-2 text-gray-600 hover:text-[#2E8B57] transition-colors duration-200"
           >
             <Home className="h-5 w-5" />
             <span className="font-medium">Back to Home</span>
-          </button>
+          </Button>
           
-          <div className="text-sm text-gray-500">
+          <Badge variant="outline" className="text-sm text-gray-500">
             Question {currentQuestion + 1} of {quizQuestions.length}
-          </div>
+          </Badge>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-3 mb-8">
-          <div
-            className="bg-gradient-to-r from-[#2E8B57] to-[#FFD700] h-3 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
+        <Progress value={progress} className="w-full h-3 mb-8" />
       </div>
 
       {/* Quiz Card */}
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 border border-gray-100 transform transition-all duration-500">
-          <div className="mb-8">
-            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+        <Card className="bg-white rounded-2xl shadow-xl border border-gray-100 transform transition-all duration-500">
+          <CardHeader className="p-8 lg:p-12 pb-0">
+            <CardTitle className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
               {question.question}
-            </h2>
+            </CardTitle>
             {question.description && (
-              <p className="text-gray-600">{question.description}</p>
+              <CardDescription className="text-gray-600">{question.description}</CardDescription>
             )}
             {question.type === 'multi-select' && (
-              <p className="text-[#2E8B57] font-medium mt-2">
+              <Badge variant="secondary" className="text-[#2E8B57] font-medium mt-2 w-fit">
                 Choose up to {question.maxSelections || 3} options
-              </p>
+              </Badge>
             )}
             {question.type === 'rating' && (
-              <p className="text-[#2E8B57] font-medium mt-2">Rate each factor from 1 (not important) to 5 (extremely important)</p>
+              <Badge variant="secondary" className="text-[#2E8B57] font-medium mt-2 w-fit">
+                Rate each factor from 1 (not important) to 5 (extremely important)
+              </Badge>
             )}
-          </div>
+          </CardHeader>
+          <CardContent className="p-8 lg:p-12 pt-8">
 
           {/* Answer Options - Different rendering based on question type */}
           {question.type === 'rating' ? (
@@ -244,8 +252,9 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                   </div>
                   <div className="flex space-x-2">
                     {[1, 2, 3, 4, 5].map((rating) => (
-                      <button
+                      <Button
                         key={rating}
+                        variant={currentRating === rating ? "default" : "outline"}
                         onClick={() => {
                           const newRatingAnswers = { ...ratingAnswers, [factor]: rating };
                           setRatingAnswers(newRatingAnswers);
@@ -253,14 +262,14 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                           newAnswers[currentQuestion] = newRatingAnswers;
                           setAnswers(newAnswers);
                         }}
-                        className={`w-12 h-12 rounded-full border-2 font-bold transition-all duration-200 ${
+                        className={`w-12 h-12 rounded-full font-bold transition-all duration-200 ${
                           currentRating === rating
-                            ? 'border-[#2E8B57] bg-[#2E8B57] text-white'
-                            : 'border-gray-300 hover:border-[#2E8B57]/50 text-gray-600'
+                            ? 'bg-[#2E8B57] text-white border-[#2E8B57]'
+                            : 'hover:border-[#2E8B57]/50'
                         }`}
                       >
                         {rating}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -276,16 +285,17 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                 const maxSelections = question.maxSelections || 3;
                 
                 return (
-                  <button
+                  <Button
                     key={index}
+                    variant={isSelected ? "default" : "outline"}
                     onClick={() => handleAnswerSelect(option)}
                     disabled={question.type === 'multi-select' && !isSelected && (selectedAnswers as string[]).length >= maxSelections}
-                    className={`w-full text-left p-6 rounded-xl border-2 transition-all duration-200 ${
+                    className={`w-full text-left p-6 rounded-xl transition-all duration-200 justify-start h-auto ${
                       isSelected
-                        ? 'border-[#2E8B57] bg-[#2E8B57]/5 text-[#2E8B57]'
+                        ? 'bg-[#2E8B57]/5 text-[#2E8B57] border-[#2E8B57]'
                         : question.type === 'multi-select' && (selectedAnswers as string[]).length >= maxSelections
-                          ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-200 hover:border-[#2E8B57]/50 hover:bg-gray-50'
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'hover:border-[#2E8B57]/50 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center space-x-4">
@@ -304,7 +314,7 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                       </div>
                       <span className="font-medium">{option}</span>
                     </div>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -312,47 +322,37 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
 
           {/* Navigation Buttons */}
           <div className="flex justify-between">
-            <button
+            <Button
+              variant="outline"
               onClick={goToPrevious}
               disabled={currentQuestion === 0}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                currentQuestion === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'border-2 border-[#2E8B57] text-[#2E8B57] hover:bg-[#2E8B57] hover:text-white'
-              }`}
+              className="flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold"
             >
               <ArrowLeft className="h-5 w-5" />
               <span>Previous</span>
-            </button>
+            </Button>
 
             {currentQuestion === quizQuestions.length - 1 ? (
-              <button
+              <Button
                 onClick={handleSubmit}
                 disabled={!canProceed}
-                className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  canProceed
-                    ? 'bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className="px-8 py-3 rounded-lg font-semibold bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Get My Results
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 onClick={goToNext}
                 disabled={!canProceed}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  canProceed
-                    ? 'bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className="flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold bg-[#2E8B57] hover:bg-[#2E8B57]/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <span>Next</span>
                 <ArrowRight className="h-5 w-5" />
-              </button>
+              </Button>
             )}
           </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
