@@ -59,14 +59,6 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
     }
   };
 
-  const handleRatingSelectForFactor = (factorLabel: string, value: number) => {
-    const newRatingAnswers = { ...ratingAnswers, [factorLabel]: value };
-    setRatingAnswers(newRatingAnswers);
-    
-    const newAnswers = [...answers];
-    newAnswers[currentQuestion] = newRatingAnswers;
-    setAnswers(newAnswers);
-  };
 
   const goToNext = () => {
     if (currentQuestion < quizQuestions.length - 1) {
@@ -111,7 +103,7 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
       return selectedAnswers.length > 0;
     } else if (question?.type === 'rating') {
       const ratingCount = Object.keys(ratingAnswers).length;
-      const expectedCount = (question.options as { value: number; label: string }[]).length;
+      const expectedCount = (question.options as string[]).length;
       return ratingCount === expectedCount;
     } else {
       return answers[currentQuestion] !== '';
@@ -240,12 +232,12 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
           {/* Answer Options - Different rendering based on question type */}
           {question.type === 'rating' ? (
             <div className="space-y-6 mb-12">
-              {(question.options as { value: number; label: string }[]).map((option, index) => {
-                const currentRating = ratingAnswers[option.label] || 0;
+              {(question.options as string[]).map((factor, index) => {
+                const currentRating = ratingAnswers[factor] || 0;
                 return (
                 <div key={index} className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-700">{option.label}</span>
+                    <span className="font-medium text-gray-700">{factor}</span>
                     <span className="text-sm text-gray-500">
                       {currentRating > 0 ? `Rating: ${currentRating}` : 'Not rated'}
                     </span>
@@ -254,7 +246,13 @@ const CareerQuiz: React.FC<CareerQuizProps> = ({ onGoHome, onShowResult }) => {
                     {[1, 2, 3, 4, 5].map((rating) => (
                       <button
                         key={rating}
-                        onClick={() => handleRatingSelectForFactor(option.label, rating)}
+                        onClick={() => {
+                          const newRatingAnswers = { ...ratingAnswers, [factor]: rating };
+                          setRatingAnswers(newRatingAnswers);
+                          const newAnswers = [...answers];
+                          newAnswers[currentQuestion] = newRatingAnswers;
+                          setAnswers(newAnswers);
+                        }}
                         className={`w-12 h-12 rounded-full border-2 font-bold transition-all duration-200 ${
                           currentRating === rating
                             ? 'border-[#2E8B57] bg-[#2E8B57] text-white'

@@ -118,11 +118,11 @@ export const quizQuestions: QuizQuestion[] = [
     category: 'values',
     weight: 0.8,
     options: [
-      { value: 1, label: "Job Security" },
-      { value: 2, label: "High Salary" },
-      { value: 3, label: "Creative Expression" },
-      { value: 4, label: "Social Impact" },
-      { value: 5, label: "Career Growth" }
+      "Job Security",
+      "High Salary", 
+      "Creative Expression",
+      "Social Impact",
+      "Career Growth"
     ]
   },
 
